@@ -49,7 +49,9 @@ def file_to_package(file, basedir=None):
     if os.path.splitext(file)[1].lower() == ".egg":
         return egg_to_package(file)
 
+    is_wheel = False
     if os.path.splitext(file)[1].lower() == ".whl":
+        is_wheel = True
         split = list(re.match(r'^(.*)\-(.*\-.*\-.*\-.*\.whl)$', file).groups())
     else:
         split = file.rsplit("-", 1)
@@ -60,6 +62,8 @@ def file_to_package(file, basedir=None):
             msg += "; found in directory: %r" %(basedir)
         msg += ")"
         raise ValueError(msg)
+    if is_wheel:
+        return (split[0], split[1])
     return (split[0], pkg_resources.safe_name(split[1]))
 
 def archive_pip_packages(pip_args, path, package_cmds):
